@@ -8,7 +8,7 @@ import { AppProvider } from '../../components/contexts/appContext';
 import { Header } from '../../components/header';
 import { Layout } from '../../components/layout';
 import {
-	Post,
+	type Post,
 	PublicationFragment,
 	TagInitialDocument,
 	TagInitialQuery,
@@ -132,10 +132,10 @@ export const getServerSideProps: any = async (ctx: any) => { // TODO: type needs
   const { data } = await urqlClient
     .query(
       TagInitialDocument,
-      { 
+      {
 		host: process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST,
-		slug: slug, 
-		first: INITIAL_LIMIT, after: null 
+		slug: slug,
+		first: INITIAL_LIMIT, after: null
 	},
       {
         fetchOptions: {

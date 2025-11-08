@@ -13,7 +13,7 @@ import {
 	DraftByIdQuery,
 	DraftByIdQueryVariables,
 	DraftFragment,
-	Post,
+	type Post,
 	PublicationByHostDocument,
 	PublicationByHostQuery,
 	PublicationByHostQueryVariables,
@@ -249,7 +249,7 @@ export async function getStaticProps({ params }: Params) {
 			},
 		),
 	]);
-	
+
 	const publication = dataPublication.publication;
 	const draft = dataDraft.draft;
 	return {
