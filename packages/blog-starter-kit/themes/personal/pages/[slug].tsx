@@ -16,7 +16,7 @@ import { CoverImage } from '../components/cover-image';
 import { DateFormatter } from '../components/date-formatter';
 import { Footer } from '../components/footer';
 import { Layout } from '../components/layout';
-import { MarkdownToHtml } from '../components/markdown-to-html';
+import MarkdownToHtml from '../components/markdown-to-html';
 import { PersonalHeader } from '../components/personal-theme-header';
 import {
 	PageByPublicationDocument,
