@@ -60,12 +60,12 @@ function PostView(props: any) {
                     src={resizeImage(post.coverImage, {
                         w: 1600,
                         h: 840,
-                        ...(!post.coverImage?.isPortrait ?? false ? { c: 'thumb' } : { fill: 'blur' }),
+                        ...(post.coverImage?.isPortrait !== true ? { c: 'thumb' } : { fill: 'blur' }),
                     })}
                     blurDataURL={getBlurHash(
                         resizeImage(post.coverImage, {
                         ...blurImageDimensions,
-                        ...(!post.coverImage?.isPortrait ?? false ? { c: 'thumb' } : { fill: 'blur' }),
+                        ...(post.coverImage?.isPortrait !== true ? { c: 'thumb' } : { fill: 'blur' }),
                         }),
                     )}
                     width={1600}
@@ -139,12 +139,12 @@ function PostView(props: any) {
                     src={resizeImage(post.coverImage, {
                         w: 1600,
                         h: 840,
-                        ...(!post.coverImage?.isPortrait ?? false ? { c: 'thumb' } : { fill: 'blur' }),
+                        ...(post.coverImage?.isPortrait !== true ? { c: 'thumb' } : { fill: 'blur' }),
                     })}
                     blurDataURL={getBlurHash(
                         resizeImage(post.coverImage, {
                         ...blurImageDimensions,
-                        ...(!post.coverImage?.isPortrait ?? false ? { c: 'thumb' } : { fill: 'blur' }),
+                        ...(post.coverImage?.isPortrait !== true ? { c: 'thumb' } : { fill: 'blur' }),
                         }),
                     )}
                     width={1600}
@@ -186,9 +186,9 @@ function PostView(props: any) {
 										shortname='x5gtrn-log'
 										config={
 												{
-														url: this.props.article.url,
-														identifier: this.props.article.id,
-														title: this.props.article.title,
+														url: post.url,
+														identifier: post.id,
+														title: post.title,
 														language: 'en_US'
 												}
 										}
