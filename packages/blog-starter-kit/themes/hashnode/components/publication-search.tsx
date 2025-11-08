@@ -283,7 +283,7 @@ const PublicationSearch = (props: Props) => {
               {!fetching && !isResultEmpty && pageInfo?.hasNextPage && <Waypoint onEnter={fetchMore} topOffset="-5%" />}
               {isEndOfFeed && (
                 <div className="self-center py-6 text-center font-heading font-semibold text-slate-700 dark:text-slate-300">
-                  <p className="text-md">You&apos;ve reached the end! 👋</p>
+                  <p className="text-md">You&apos;ve reached<br/>the end! 👋</p>
                 </div>
               )}
             </div>

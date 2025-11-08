@@ -60,7 +60,7 @@ const PublicationPosts = (props: {
       {fetchedOnce && pageInfo.hasNextPage ? <Waypoint onEnter={fetchMore} topOffset="-20%" /> : null}
       {fetchedOnce && !pageInfo.hasNextPage ? (
         <div className="blog-posts-end-card my-10 px-16 py-8 text-center font-heading font-bold text-slate-700 dark:text-slate-300">
-          <p className="text-2xl">You&apos;ve reached the end! 👋</p>
+          <p className="text-2xl">You&apos;ve reached<br/>the end! 👋</p>
         </div>
       ) : null}
     </>
