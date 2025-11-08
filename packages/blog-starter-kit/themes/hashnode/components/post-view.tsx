@@ -182,18 +182,6 @@ function PostView(props: any) {
                     <PublicationSubscribeStandOut />
                 )}
 
-								<DiscussionEmbed
-										shortname='x5gtrn-log'
-										config={
-												{
-														url: post.url,
-														identifier: post.id,
-														title: post.title,
-														language: 'en_US'
-												}
-										}
-								/>
-
                 {post?.tags && post.tags.length > 0 && (
                     <div className="mb-5 flex w-full flex-row flex-wrap justify-center md:mb-0">
                     {post.tags.map((tag: any) => (
@@ -209,6 +197,19 @@ function PostView(props: any) {
                     </div>
                 )}
                 </div>
+							<div>
+								<DiscussionEmbed
+									shortname='x5gtrn-log'
+									config={
+										{
+											url: post.url,
+											identifier: post.id,
+											title: post.title,
+											language: 'en_US'
+										}
+									}
+								/>
+							</div>
             </section>
             </div>
             {textSelectionSharerEnabled && (
