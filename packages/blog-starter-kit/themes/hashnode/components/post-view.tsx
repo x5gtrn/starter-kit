@@ -6,6 +6,8 @@ import moment from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
+import { DiscussionEmbed } from 'disqus-react';
+
 import {
   BookOpenSVG,
 } from './icons/svgs';
@@ -179,6 +181,18 @@ function PostView(props: any) {
                 {post.publication && post.publication.features.newsletter.isEnabled && (
                     <PublicationSubscribeStandOut />
                 )}
+
+								<DiscussionEmbed
+										shortname='x5gtrn-log'
+										config={
+												{
+														url: this.props.article.url,
+														identifier: this.props.article.id,
+														title: this.props.article.title,
+														language: 'en_US'
+												}
+										}
+								/>
 
                 {post?.tags && post.tags.length > 0 && (
                     <div className="mb-5 flex w-full flex-row flex-wrap justify-center md:mb-0">

@@ -45,7 +45,8 @@
 		"urql": "4.0.4",
 		"uuid": "^9.0.1",
 		"validator": "^13.6.0",
-		"zustand": "^4.3.3"
+		"zustand": "^4.3.3",
+		"disqus-react": "^1.1.7"
 	},
 	"devDependencies": {
 		"@graphql-codegen/cli": "^5.0.0",
