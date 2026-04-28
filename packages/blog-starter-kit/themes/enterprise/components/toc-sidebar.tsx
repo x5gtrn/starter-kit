@@ -12,10 +12,6 @@ interface TocItem {
 	title: string;
 }
 
-interface TocSidebarProps {
-	onHasItems?: (hasItems: boolean) => void;
-}
-
 const mapApiItems = (toc: TableOfContentsItem[]): TocItem[] => {
 	try {
 		return (toc ?? []).map((tocItem) => {
@@ -32,7 +28,7 @@ const mapApiItems = (toc: TableOfContentsItem[]): TocItem[] => {
 	}
 };
 
-const extractTocFromDom = (): TocItem[] => {
+export const extractTocFromDom = (): TocItem[] => {
 	const contentEl = document.querySelector('.hashnode-content-style');
 	if (!contentEl) return [];
 
@@ -48,16 +44,14 @@ const extractTocFromDom = (): TocItem[] => {
 		}));
 };
 
-const TocSidebar = ({ onHasItems }: TocSidebarProps) => {
+const TocSidebar = () => {
 	const { post } = useAppContext();
 	const [activeId, setActiveId] = useState('');
 	const [items, setItems] = useState<TocItem[]>([]);
 
 	useEffect(() => {
 		const apiItems = post ? mapApiItems(post.features.tableOfContents.items) : [];
-		const resolved = apiItems.length > 0 ? apiItems : extractTocFromDom();
-		setItems(resolved);
-		onHasItems?.(resolved.length > 0);
+		setItems(apiItems.length > 0 ? apiItems : extractTocFromDom());
 	}, [post]);
 
 	useEffect(() => {

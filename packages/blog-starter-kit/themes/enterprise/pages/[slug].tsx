@@ -14,6 +14,7 @@ import { Layout } from '../components/layout';
 import { MarkdownToHtml } from '../components/markdown-to-html';
 import { PostHeader } from '../components/post-header';
 import { PostTOC } from '../components/post-toc';
+import { extractTocFromDom } from '../components/toc-sidebar';
 import {
 	PageByPublicationDocument,
 	PostFullFragment,
@@ -59,7 +60,7 @@ const Post = ({ publication, post }: PostProps) => {
 		post.features.tableOfContents.isEnabled &&
 		(post.features?.tableOfContents?.items?.length ?? 0) > 0;
 
-	const [showTocSidebar, setShowTocSidebar] = useState(false);
+	const [showTocSidebar, setShowTocSidebar] = useState(hasToc);
 
 	const tagsList = (post.tags ?? []).map((tag) => (
 		<li key={tag.id}>
@@ -87,6 +88,10 @@ const Post = ({ publication, post }: PostProps) => {
 
 		if (!post) {
 			return;
+		}
+
+		if (!hasToc) {
+			setShowTocSidebar(extractTocFromDom().length > 0);
 		}
 
 		// TODO:
@@ -140,15 +145,11 @@ const Post = ({ publication, post }: PostProps) => {
 					showTocSidebar && 'xl:grid xl:grid-cols-[240px_1fr] xl:items-start xl:gap-10',
 				)}
 			>
-				<aside
-					className={twJoin(
-						'hidden',
-						showTocSidebar &&
-							'xl:sticky xl:top-24 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto',
-					)}
-				>
-					<TocSidebar onHasItems={setShowTocSidebar} />
-				</aside>
+				{showTocSidebar && (
+					<aside className="hidden xl:sticky xl:top-24 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto">
+						<TocSidebar />
+					</aside>
+				)}
 				<article className="flex min-w-0 flex-col items-start gap-10 pb-10">
 					<PostHeader
 						title={post.title}
