@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import { extractTocFromDom } from '../components/toc-sidebar';
 
 const TocSidebar = dynamic(() => import('../components/toc-sidebar'), { ssr: false });
+const DisqusComments = dynamic(() => import('../components/disqus-comments'), { ssr: false });
 import { Container } from '../components/container';
 import { AppProvider } from '../components/contexts/appContext';
 import { CoverImage } from '../components/cover-image';
@@ -165,6 +166,11 @@ const Post = ({ publication, post }: PostProps) => {
 							<ul className="flex flex-row flex-wrap items-center gap-2">{tagsList}</ul>
 						</div>
 					)}
+					<DisqusComments
+						url={`https://daisuke.masuda.tokyo/${post.slug}`}
+						identifier={post.id}
+						title={post.title}
+					/>
 				</article>
 			</div>
 		</>
