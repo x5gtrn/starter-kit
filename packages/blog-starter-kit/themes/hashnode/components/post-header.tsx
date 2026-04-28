@@ -16,6 +16,8 @@ import CoAuthorsModal from './co-authors-modal';
 import CustomImage from './custom-image';
 import ProfileImage from './profile-image';
 import TocRenderDesign from './toc-render-design';
+import { extractTocFromDom } from './toc-sidebar';
+const TocSidebar = dynamic(() => import('./toc-sidebar'), { ssr: false });
 const OtherPostsOfAccount = dynamic(() => import('./other-posts-of-account'), { ssr: false });
 const AboutAuthor = dynamic(() => import('./about-author'), { ssr: false });
 
@@ -48,6 +50,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 	const toc = post.features?.tableOfContents?.isEnabled
 		? post.features?.tableOfContents?.items.flat()
 		: [];
+	const [showTocSidebar, setShowTocSidebar] = useState(toc.length > 0);
 	const memoizedPostContent = useMemo(
 		() => imageReplacer(post.content?.html, true),
 		[post.content?.html],
@@ -102,6 +105,10 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 
 		if (!post) {
 			return;
+		}
+
+		if (!toc.length) {
+			setShowTocSidebar(extractTocFromDom().length > 0);
 		}
 
 		// TODO:
@@ -262,9 +269,25 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 				</div>
 			</div>
 			<div className="blog-content-wrapper article-main-wrapper container relative z-30 mx-auto grid grid-flow-row grid-cols-8 xl:gap-6 2xl:grid-cols-10">
-				<section className="blog-content-main z-20 col-span-8 mb-10 px-4 md:z-10 lg:col-span-6 lg:col-start-2 lg:px-0 xl:col-span-6 xl:col-start-2 2xl:col-span-6 2xl:col-start-3">
+				{showTocSidebar && (
+					<aside className="hidden xl:sticky xl:top-24 xl:col-span-2 xl:col-start-1 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto 2xl:col-span-2 2xl:col-start-2">
+						<TocSidebar list={toc} />
+					</aside>
+				)}
+				<section
+					className={twJoin(
+						'blog-content-main z-20 col-span-8 mb-10 px-4 md:z-10 lg:col-span-6 lg:col-start-2 lg:px-0',
+						showTocSidebar
+							? 'xl:col-span-5 xl:col-start-3 2xl:col-span-6 2xl:col-start-4'
+							: 'xl:col-span-6 xl:col-start-2 2xl:col-span-6 2xl:col-start-3',
+					)}
+				>
 					<div className="relative">
-						{post.features?.tableOfContents?.isEnabled && post.features?.tableOfContents?.items?.length > 0 && <TocRenderDesign list={toc} />}
+						{toc.length > 0 && (
+							<div className="xl:hidden">
+								<TocRenderDesign list={toc} />
+							</div>
+						)}
 
 						{/* {isPublicationPost && renderPinnedWidgets(props.widgets, 'top')} */}
 
