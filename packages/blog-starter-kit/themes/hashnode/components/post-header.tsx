@@ -15,7 +15,6 @@ import { getBlurHash, imageReplacer } from '../utils/image';
 import CoAuthorsModal from './co-authors-modal';
 import CustomImage from './custom-image';
 import ProfileImage from './profile-image';
-import TocRenderDesign from './toc-render-design';
 import { extractTocFromDom } from './toc-sidebar';
 const TocSidebar = dynamic(() => import('./toc-sidebar'), { ssr: false });
 const OtherPostsOfAccount = dynamic(() => import('./other-posts-of-account'), { ssr: false });
@@ -50,7 +49,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 	const toc = post.features?.tableOfContents?.isEnabled
 		? post.features?.tableOfContents?.items.flat()
 		: [];
-	const [showTocSidebar, setShowTocSidebar] = useState(toc.length > 0);
+	const [showTocSidebar, setShowTocSidebar] = useState(false);
 	const memoizedPostContent = useMemo(
 		() => imageReplacer(post.content?.html, true),
 		[post.content?.html],
@@ -107,9 +106,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 			return;
 		}
 
-		if (!toc.length) {
-			setShowTocSidebar(extractTocFromDom().length > 0);
-		}
+		setShowTocSidebar(extractTocFromDom().length > 0);
 
 		// TODO:
 		// More of an alert, did this below to wrap async funcs inside useEffect
@@ -271,7 +268,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 			<div className="blog-content-wrapper article-main-wrapper container relative z-30 mx-auto grid grid-flow-row grid-cols-8 xl:gap-6 2xl:grid-cols-10">
 				{showTocSidebar && (
 					<aside className="hidden xl:sticky xl:top-24 xl:col-span-2 xl:col-start-1 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto 2xl:col-span-2 2xl:col-start-2">
-						<TocSidebar list={toc} />
+						<TocSidebar />
 					</aside>
 				)}
 				<section
@@ -283,11 +280,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 					)}
 				>
 					<div className="relative">
-						{toc.length > 0 && (
-							<div className="xl:hidden">
-								<TocRenderDesign list={toc} />
-							</div>
-						)}
 
 						{/* {isPublicationPost && renderPinnedWidgets(props.widgets, 'top')} */}
 

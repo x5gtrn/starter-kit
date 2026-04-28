@@ -8,11 +8,7 @@ interface TocItem {
 	title: string;
 }
 
-interface TocSidebarProps {
-	list: any[];
-}
-
-const extractTocFromDom = (): TocItem[] => {
+export const extractTocFromDom = (): TocItem[] => {
 	const contentEl = document.getElementById('post-content-wrapper');
 	if (!contentEl) return [];
 
@@ -28,17 +24,13 @@ const extractTocFromDom = (): TocItem[] => {
 		}));
 };
 
-const TocSidebar = ({ list }: TocSidebarProps) => {
+const TocSidebar = () => {
 	const [activeId, setActiveId] = useState<string>('');
 	const [items, setItems] = useState<TocItem[]>([]);
 
 	useEffect(() => {
-		if (list && list.length > 0) {
-			setItems(list);
-		} else {
-			setItems(extractTocFromDom());
-		}
-	}, [list]);
+		setItems(extractTocFromDom());
+	}, []);
 
 	useEffect(() => {
 		if (!items.length) return;
@@ -98,5 +90,4 @@ const TocSidebar = ({ list }: TocSidebarProps) => {
 	);
 };
 
-export { extractTocFromDom };
 export default TocSidebar;
