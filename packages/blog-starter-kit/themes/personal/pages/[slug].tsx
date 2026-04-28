@@ -167,7 +167,8 @@ const Post = ({ publication, post }: PostProps) => {
 						</div>
 					)}
 					<DisqusComments
-						url={`https://daisuke.masuda.tokyo/${post.slug}`}
+						key={post.id}
+						url={post.url}
 						identifier={post.id}
 						title={post.title}
 					/>
