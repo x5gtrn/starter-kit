@@ -38,6 +38,7 @@ type Props = {
 
 const PostFloatingMenu = dynamic(() => import('./post-floating-bar'), { ssr: false });
 const PostCommentsSidebar = dynamic(() => import('./post-comments-sidebar'), { ssr: false });
+const DisqusComments = dynamic(() => import('./disqus-comments'), { ssr: false });
 
 const PublicationSubscribeStandOut = dynamic(() => import('./publication-subscribe-standout'), {
 	ssr: false,
@@ -326,6 +327,12 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 						)}
 
 						<AboutAuthor />
+						<DisqusComments
+							key={post.id}
+							url={post.url}
+							identifier={post.id}
+							title={post.title}
+						/>
 					</div>
 				</section>
 			</div>
