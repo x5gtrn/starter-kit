@@ -7,9 +7,13 @@ import { useEmbeds } from '@starter-kit/utils/renderer/hooks/useEmbeds';
 import { loadIframeResizer } from '@starter-kit/utils/renderer/services/embed';
 import request from 'graphql-request';
 import { GetStaticProps } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { extractTocFromDom } from '../components/toc-sidebar';
+
+const TocSidebar = dynamic(() => import('../components/toc-sidebar'), { ssr: false });
 import { Container } from '../components/container';
 import { AppProvider } from '../components/contexts/appContext';
 import { CoverImage } from '../components/cover-image';
@@ -48,6 +52,7 @@ const Post = ({ publication, post }: PostProps) => {
 		'.hljs{display:block;overflow-x:auto;padding:.5em;background:#23241f}.hljs,.hljs-subst,.hljs-tag{color:#f8f8f2}.hljs-emphasis,.hljs-strong{color:#a8a8a2}.hljs-bullet,.hljs-link,.hljs-literal,.hljs-number,.hljs-quote,.hljs-regexp{color:#ae81ff}.hljs-code,.hljs-section,.hljs-selector-class,.hljs-title{color:#a6e22e}.hljs-strong{font-weight:700}.hljs-emphasis{font-style:italic}.hljs-attr,.hljs-keyword,.hljs-name,.hljs-selector-tag{color:#f92672}.hljs-attribute,.hljs-symbol{color:#66d9ef}.hljs-class .hljs-title,.hljs-params{color:#f8f8f2}.hljs-addition,.hljs-built_in,.hljs-builtin-name,.hljs-selector-attr,.hljs-selector-id,.hljs-selector-pseudo,.hljs-string,.hljs-template-variable,.hljs-type,.hljs-variable{color:#e6db74}.hljs-comment,.hljs-deletion,.hljs-meta{color:#75715e}';
 	const [, setMobMount] = useState(false);
 	const [canLoadEmbeds, setCanLoadEmbeds] = useState(false);
+	const [showTocSidebar, setShowTocSidebar] = useState(false);
 	useEmbeds({ enabled: canLoadEmbeds });
 	const tagsList = (post.tags ?? []).map((tag) => (
 		<li key={tag.id}>
@@ -74,6 +79,8 @@ const Post = ({ publication, post }: PostProps) => {
 		if (!post) {
 			return;
 		}
+
+		setShowTocSidebar(extractTocFromDom().length > 0);
 
 		// TODO:
 		// More of an alert, did this below to wrap async funcs inside useEffect
@@ -128,25 +135,38 @@ const Post = ({ publication, post }: PostProps) => {
 				/>
 				<style dangerouslySetInnerHTML={{ __html: highlightJsMonokaiTheme }}></style>
 			</Head>
-			<h1 className="text-4xl font-bold leading-tight tracking-tight text-black dark:text-white">
-				{post.title}
-			</h1>
-			<div className="flex tracking-tight gap-2 text-neutral-600 dark:text-neutral-400">
-				<DateFormatter dateString={post.publishedAt} />
-				{'•'}
-				<span>{post.readTimeInMinutes} min read</span>
+			<div
+				className={showTocSidebar
+					? 'w-full xl:grid xl:grid-cols-[240px_1fr] xl:items-start xl:gap-10'
+					: 'w-full'}
+			>
+				{showTocSidebar && (
+					<aside className="hidden xl:sticky xl:top-24 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto">
+						<TocSidebar />
+					</aside>
+				)}
+				<article className="flex min-w-0 flex-col items-start gap-10 pb-10">
+					<h1 className="text-4xl font-bold leading-tight tracking-tight text-black dark:text-white">
+						{post.title}
+					</h1>
+					<div className="flex tracking-tight gap-2 text-neutral-600 dark:text-neutral-400">
+						<DateFormatter dateString={post.publishedAt} />
+						{'•'}
+						<span>{post.readTimeInMinutes} min read</span>
+					</div>
+					{!!coverImageSrc && (
+						<div className="w-full">
+							<CoverImage title={post.title} priority={true} src={coverImageSrc} />
+						</div>
+					)}
+					<MarkdownToHtml contentMarkdown={post.content.markdown} />
+					{(post.tags ?? []).length > 0 && (
+						<div className="mx-auto w-full text-slate-600 dark:text-neutral-300 md:max-w-screen-md">
+							<ul className="flex flex-row flex-wrap items-center gap-2">{tagsList}</ul>
+						</div>
+					)}
+				</article>
 			</div>
-			{!!coverImageSrc && (
-				<div className="w-full">
-					<CoverImage title={post.title} priority={true} src={coverImageSrc} />
-				</div>
-			)}
-			<MarkdownToHtml contentMarkdown={post.content.markdown} />
-			{(post.tags ?? []).length > 0 && (
-				<div className="mx-auto w-full text-slate-600 dark:text-neutral-300 md:max-w-screen-md">
-					<ul className="flex flex-row flex-wrap items-center gap-2">{tagsList}</ul>
-				</div>
-			)}
 		</>
 	);
 };
@@ -171,12 +191,21 @@ export default function PostOrPage(props: Props) {
 	return (
 		<AppProvider publication={publication} post={maybePost} page={maybePage}>
 			<Layout>
-				<Container className="mx-auto flex max-w-3xl flex-col items-stretch gap-10 px-5 py-10">
+				<Container className="mx-auto max-w-3xl px-5 pt-10">
 					<PersonalHeader />
-					<article className="flex flex-col items-start gap-10 pb-10">
-						{props.type === 'post' && <Post {...props} />}
-						{props.type === 'page' && <Page {...props} />}
-					</article>
+				</Container>
+				{props.type === 'post' ? (
+					<Container className="mx-auto max-w-7xl px-5 py-10">
+						<Post {...(props as PostProps)} />
+					</Container>
+				) : (
+					<Container className="mx-auto flex max-w-3xl flex-col items-stretch gap-10 px-5 py-10">
+						<article className="flex flex-col items-start gap-10 pb-10">
+							<Page {...(props as PageProps)} />
+						</article>
+					</Container>
+				)}
+				<Container className="mx-auto max-w-3xl px-5 pb-10">
 					<Footer />
 				</Container>
 			</Layout>
