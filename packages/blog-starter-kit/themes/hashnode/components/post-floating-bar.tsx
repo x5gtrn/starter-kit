@@ -1,12 +1,7 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { useEffect } from 'react';
 
-import { CommentSVGV2 } from './icons/svgs';
-import { kFormatter } from '../utils/image';
-import { Separator } from './separator-root';
-import PostFloatingBarTooltipWrapper from './post-floating-bar-tooltip-wrapper';
 import { PostFullFragment } from '../generated/graphql';
-import TocSheet from './toc-sheet';
 import PostShareWidget from './post-share-widget';
 
 
@@ -19,12 +14,8 @@ function PostFloatingMenu(props: {
   list: any[];
 }) {
   const {
-    isPublicationPost,
     post,
     shareText,
-    showPaymentModal,
-    openComments,
-    list,
   } = props;
 
   const handleFloatingBarDisplay = () => {
@@ -65,14 +56,6 @@ function PostFloatingMenu(props: {
     };
   }, []);
 
-  // Best practice to have the accessible name being with the visible text (comment count)
-  const commentBtnAccessibleLabel =
-    post?.responseCount > 0
-      ? `${kFormatter(post.responseCount + (post.replyCount || 0))} comment${
-          post.responseCount === 1 ? '' : 's'
-        }, open the comments`
-      : 'Open comments';
-
   return (
     <Tooltip.Provider delayDuration={200}>
       <style
@@ -103,37 +86,7 @@ function PostFloatingMenu(props: {
       />
       <div className="post-floating-bar fixed left-0 right-0 z-50 flex h-12 w-full flex-wrap justify-center 2xl:h-14">
         <div className="relative mx-auto flex h-12 shrink flex-wrap items-center justify-center rounded-full border-1/2 border-slate-200 bg-white px-5 py-1 text-sm  text-slate-800 shadow-xl dark:border-slate-500 dark:bg-slate-700 dark:text-slate-50 2xl:h-14">
-            <PostFloatingBarTooltipWrapper label="Write a comment">
-            {post && (
-              <div>
-                <button
-                  type="button"
-                  onClick={openComments}
-                  aria-label={commentBtnAccessibleLabel}
-                  className="outline-none! flex cursor-pointer items-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  <>
-                    <span className="rounded-full p-2">
-                      <CommentSVGV2 className="h-4 w-4 stroke-current text-slate-800 dark:text-slate-50 sm:h-5 sm:w-5 2xl:h-6 2xl:w-6" />
-                    </span>
-                    {post?.responseCount > 0 && (
-                      <span className="ml-0.5 pr-2">{kFormatter(post.responseCount + (post.replyCount || 0))}</span>
-                    )}
-                  </>
-                </button>
-              </div>
-            )}
-          </PostFloatingBarTooltipWrapper>
-
-          <Separator className="mx-2 h-5" />
-
-          {post && post.features.tableOfContents.isEnabled && (
-            <>
-              <TocSheet list={list} />
-              <Separator className="mx-2 h-5" />
-            </>
-          )}
-
+  
           <PostShareWidget post={post} shareText={shareText} />
         </div>
       </div>
