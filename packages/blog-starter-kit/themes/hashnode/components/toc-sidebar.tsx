@@ -8,20 +8,44 @@ interface TocItem {
 	title: string;
 }
 
+const slugify = (text: string): string =>
+	text
+		.toLowerCase()
+		.trim()
+		.replace(/[^\w\s-]/g, '')
+		.replace(/[\s_]+/g, '-')
+		.replace(/^-+|-+$/g, '');
+
 export const extractTocFromDom = (): TocItem[] => {
 	const contentEl = document.getElementById('post-content-wrapper');
 	if (!contentEl) return [];
 
-	return Array.from(
-		contentEl.querySelectorAll<HTMLHeadingElement>('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]'),
-	)
-		.filter((el) => el.id.startsWith('heading-'))
-		.map((el, index) => ({
+	const headings = Array.from(
+		contentEl.querySelectorAll<HTMLHeadingElement>('h1, h2, h3, h4, h5, h6'),
+	);
+
+	const slugCounts: Record<string, number> = {};
+
+	return headings.map((el, index) => {
+		const title = el.textContent?.trim() ?? '';
+		let slug = slugify(title) || `heading-${index}`;
+
+		if (slugCounts[slug] !== undefined) {
+			slugCounts[slug]++;
+			slug = `${slug}-${slugCounts[slug]}`;
+		} else {
+			slugCounts[slug] = 0;
+		}
+
+		el.id = `heading-${slug}`;
+
+		return {
 			id: String(index),
 			level: parseInt(el.tagName[1], 10),
-			slug: el.id.replace(/^heading-/, ''),
-			title: el.textContent?.trim() ?? '',
-		}));
+			slug,
+			title,
+		};
+	});
 };
 
 const TocSidebar = () => {
