@@ -36,7 +36,6 @@ type Props = {
 	morePosts: MorePostsEdgeFragment[];
 };
 
-const PostFloatingMenu = dynamic(() => import('./post-floating-bar'), { ssr: false });
 const PostCommentsSidebar = dynamic(() => import('./post-comments-sidebar'), { ssr: false });
 const DisqusComments = dynamic(() => import('./disqus-comments'), { ssr: false });
 
@@ -66,13 +65,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 		};
 	});
 
-	const shareText = `${post.title}\r\n{ by ${
-		post.author.socialMediaLinks?.twitter
-			? `@${post.author.socialMediaLinks?.twitter
-					.substring(post.author.socialMediaLinks?.twitter.lastIndexOf('/') + 1)
-					.replace('@', '')}`
-			: post.author.name
-	} } from @hashnode`;
 
 	const handleOpenComments = () => {
 		setShowCommentsSheet(true);
@@ -298,14 +290,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 							)}
 
 							{/* {props.isPublicationPost && renderPinnedWidgets(props.widgets, 'bottom')} */}
-
-							<PostFloatingMenu
-								isPublicationPost={true}
-								post={post}
-								shareText={shareText}
-								openComments={handleOpenComments}
-								list={toc}
-							/>
 						</div>
 
 						{post.publication && post.publication?.features?.newsletter?.isEnabled && (
