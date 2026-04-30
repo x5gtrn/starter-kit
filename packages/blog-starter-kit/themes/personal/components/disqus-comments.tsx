@@ -35,7 +35,7 @@ const DisqusComments = ({ url, identifier, title }: Props) => {
 		}
 	}, [url, identifier, title]);
 
-	return <div id="disqus_thread" className="mx-auto w-full md:max-w-screen-md" />;
+	return <div id="disqus_thread" className="mx-auto mt-[100px] w-full md:max-w-screen-md" />;
 };
 
 export default DisqusComments;
