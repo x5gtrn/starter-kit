@@ -51,10 +51,20 @@ const getRedirectionRules = async () => {
 		}
   	`;
 
-	const data = await request(GQL_ENDPOINT, query, undefined, getHashnodeRequestHeaders());
+	let data;
+
+	try {
+		data = await request(GQL_ENDPOINT, query, undefined, getHashnodeRequestHeaders());
+	} catch (error) {
+		console.warn('Failed to fetch Hashnode redirection rules; skipping redirects.', error);
+		return [];
+	}
 
 	if (!data.publication) {
-		throw 'Please ensure you have set the env var NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST correctly.';
+		console.warn(
+			'Publication not found while fetching redirection rules. Please verify NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST.',
+		);
+		return [];
 	}
 
 	const redirectionRules = data.publication.redirectionRules;
