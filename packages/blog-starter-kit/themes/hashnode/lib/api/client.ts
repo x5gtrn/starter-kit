@@ -12,7 +12,7 @@ const isServerSide = typeof window === 'undefined';
  */
 
 export const getUrqlClientConfig = (ssrExchange: Exchange) => ({
-    url: process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT,
+    url: isServerSide ? process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT : '/api/hashnode',
     exchanges: [
       cacheExchange({
         // relayPagination() keeps previous results in the cache; ⚠️ this leads to unexpected results if used in API routes due to possible different execution environments
@@ -79,6 +79,10 @@ export function createHeaders(options?: { byPassCache?: boolean; cookies?: strin
   const headers: Record<string, string> = {
     'hn-trace-app': 'blogs',
   };
+
+  if (isServerSide && process.env.HASHNODE_API_KEY) {
+    headers.Authorization = process.env.HASHNODE_API_KEY;
+  }
 
   if (options?.byPassCache) {
     headers['hn-stellate-bypass-cache'] = '1';

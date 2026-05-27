@@ -1,25 +1,42 @@
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
+const plusJakartaSans = localFont({
+  src: [
+    {
+      path: '../../assets/PlusJakartaSans-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/PlusJakartaSans-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/PlusJakartaSans-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/PlusJakartaSans-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../../assets/PlusJakartaSans-ExtraBold.ttf',
+      weight: '800',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-plus-jakarta-sans',
-  display: 'swap',
-});
-
-const variableConstant = 'variable';
-const fontInterVar = inter.variable.replace(variableConstant, 'Inter');
-const fontPlusJakartaSansVar = plusJakartaSans.variable.replace(variableConstant, 'Plus_Jakarta_Sans');
+const fontPlusJakartaSansVar = plusJakartaSans.style.fontFamily;
 
 export const GlobalFontVariables = () => (
   <style jsx global>{`
     html {
-      --font-inter: ${fontInterVar};
+      --font-inter: ${fontPlusJakartaSansVar};
       --font-plus-jakarta-sans: ${fontPlusJakartaSansVar};
     }
   `}</style>

@@ -5,6 +5,7 @@ import {
 	PublicationByHostQuery,
 	PublicationByHostQueryVariables,
 } from '../generated/graphql';
+import { createHeaders } from '../lib/api/client';
 
 const GQL_ENDPOINT = process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT;
 const Dashboard = () => null;
@@ -16,6 +17,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 		{
 			host: process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST,
 		},
+		createHeaders(),
 	);
 
 	const publication = data.publication;
