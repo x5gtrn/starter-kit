@@ -1,4 +1,4 @@
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetStaticPropsType } from 'next';
 import { WithUrqlProps, initUrqlClient } from 'next-urql';
 import Head from 'next/head';
 import Image from 'next/legacy/image';
@@ -26,6 +26,9 @@ import PublicationFooter from '../components/publication-footer';
 import PublicationMeta from '../components/publication-meta';
 import { resizeImage } from '../utils/image';
 
+const REVALIDATION_INTERVAL_POST_VIEWS_ACTIVE = 60 * 60; // 1 hour
+const REVALIDATION_INTERVAL = 60 * 60 * 24 * 30; // 1 month
+
 const NoPostsImage = ({ alt = '' }) => {
 	return (
 		<Image
@@ -41,7 +44,7 @@ const NoPostsImage = ({ alt = '' }) => {
 };
 
 export default function Index(
-	props: InferGetServerSidePropsType<typeof getServerSideProps> & Required<WithUrqlProps>,
+	props: InferGetStaticPropsType<typeof getStaticProps> & Required<WithUrqlProps>,
 ) {
 	const { host, publication, initialLimit } = props;
 
@@ -193,7 +196,7 @@ export default function Index(
 	);
 }
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
 	const ssrCache = createSSRExchange();
 	const urqlClient = initUrqlClient(getUrqlClientConfig(ssrCache), false);
 	const host = process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST;
@@ -222,6 +225,7 @@ export const getServerSideProps = async () => {
 		});
 		return {
 			notFound: true,
+			revalidate: REVALIDATION_INTERVAL,
 		};
 	}
 
@@ -257,6 +261,7 @@ export const getServerSideProps = async () => {
 		});
 		return {
 			notFound: true,
+			revalidate: REVALIDATION_INTERVAL,
 		};
 	}
 
@@ -268,5 +273,6 @@ export const getServerSideProps = async () => {
 			host,
 			isHome: true,
 		},
+		revalidate: 1,
 	};
 };

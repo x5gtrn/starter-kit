@@ -24,9 +24,9 @@ import {
 	PostFullFragment,
 	PublicationFragment,
 	SinglePostByPublicationDocument,
+	SlugPostsByPublicationDocument,
 	StaticPageFragment,
 } from '../generated/graphql';
-import { createHeaders } from '../lib/api/client';
 
 type PostProps = {
 	type: 'post';
@@ -210,8 +210,8 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 	const slug = params.slug;
 
 	const [postData, morePostsData] = await Promise.all([
-		request(endpoint, SinglePostByPublicationDocument, { host, slug }, createHeaders()),
-		request(endpoint, MorePostsByPublicationDocument, { first: 4, host }, createHeaders()),
+		request(endpoint, SinglePostByPublicationDocument, { host, slug }),
+		request(endpoint, MorePostsByPublicationDocument, { first: 4, host }),
 	]);
 
 	if (postData.publication?.post) {
@@ -226,12 +226,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 		};
 	}
 
-	const pageData = await request(
-		endpoint,
-		PageByPublicationDocument,
-		{ host, slug },
-		createHeaders(),
-	);
+	const pageData = await request(endpoint, PageByPublicationDocument, { host, slug });
 
 	if (pageData.publication?.staticPage) {
 		return {
@@ -251,8 +246,25 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
+	const data = await request(
+		process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT,
+		SlugPostsByPublicationDocument,
+		{
+			first: 10,
+			host: process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST,
+		},
+	);
+
+	const postSlugs = (data.publication?.posts.edges ?? []).map((edge) => edge.node.slug);
+
 	return {
-		paths: [],
+		paths: postSlugs.map((slug) => {
+			return {
+				params: {
+					slug: slug,
+				},
+			};
+		}),
 		fallback: 'blocking',
 	};
 };

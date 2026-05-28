@@ -24,7 +24,6 @@ import { useRef } from 'react';
 import { twJoin } from 'tailwind-merge';
 import CustomImage from '../../components/custom-image';
 import { getBlurHash, imageReplacer, resizeImage } from '../../utils/image';
-import { createHeaders } from '../../lib/api/client';
 import { blurImageDimensions } from '../../utils/const/images';
 import ProfileImage from '../../components/profile-image';
 import { BookOpenSVG } from '../../components/icons/svgs';
@@ -241,7 +240,6 @@ export async function getStaticProps({ params }: Params) {
 			{
 				id: params.id,
 			},
-			createHeaders(),
 		),
 		request<PublicationByHostQuery, PublicationByHostQueryVariables>(
 			process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT,
@@ -249,7 +247,6 @@ export async function getStaticProps({ params }: Params) {
 			{
 				host: process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST,
 			},
-			createHeaders(),
 		),
 	]);
 
