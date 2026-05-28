@@ -55,7 +55,7 @@ The recommended approach is deploying to Vercel. If you don't have an account al
 - Set the following environment variables
 
 ```
-NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT=https://gql.hashnode.com
+NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT=https://gql-beta.hashnode.com
 NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST=engineering.hashnode.com -> Change this to your Hashnode blog URL i.e. handle.hashnode.dev
 NEXT_PUBLIC_BASE_URL=/blog -> This could be /blog if you are installing on subpath; otherwise remove this var
 NEXT_PUBLIC_MODE=production
@@ -167,7 +167,7 @@ Visit http://localhost:3000!
 If you prefer to build your frontend from scratch, you can use our public GraphQL APIs to do so:
 
 - [Docs](https://apidocs.hashnode.com)
-- [GraphQL Playground](https://gql.hashnode.com)
+- [GraphQL Playground](https://gql-beta.hashnode.com)
 
 ## Pricing
 

@@ -1,8 +1,25 @@
 import { useEffect } from 'react';
 import { useAppContext } from './contexts/appContext';
 
+type LegacyPublicationIntegrations = {
+	gaTrackingID?: string | null;
+	fbPixelID?: string | null;
+	hotjarSiteID?: string | null;
+	matomoURL?: string | null;
+	matomoSiteID?: string | null;
+	fathomSiteID?: string | null;
+	fathomCustomDomain?: string | null;
+	fathomCustomDomainEnabled?: boolean | null;
+	plausibleAnalyticsEnabled?: boolean | null;
+	gTagManagerID?: string | null;
+	koalaPublicKey?: string | null;
+	msClarityID?: string | null;
+};
+
 export function Integrations() {
 	const { publication } = useAppContext();
+	const integrations = (publication as { integrations?: LegacyPublicationIntegrations | null })
+		.integrations;
 	const {
 		gaTrackingID,
 		fbPixelID,
@@ -16,7 +33,7 @@ export function Integrations() {
 		gTagManagerID,
 		koalaPublicKey,
 		msClarityID,
-	} = publication.integrations ?? {};
+	} = integrations ?? {};
 	const domainURL = new URL(publication.url).hostname;
 
 	let fbPixel = `

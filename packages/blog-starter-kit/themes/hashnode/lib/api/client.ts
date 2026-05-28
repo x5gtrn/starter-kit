@@ -12,8 +12,9 @@ const isServerSide = typeof window === 'undefined';
  */
 
 export const getUrqlClientConfig = (ssrExchange: Exchange) => ({
-    url: process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT,
-    exchanges: [
+	    url: process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT,
+	    preferGetMethod: false,
+	    exchanges: [
       cacheExchange({
         // relayPagination() keeps previous results in the cache; ⚠️ this leads to unexpected results if used in API routes due to possible different execution environments
         resolvers: {

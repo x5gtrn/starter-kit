@@ -19,10 +19,10 @@ query HomePageInitial($host: String!) {
   }
 }
 
-query HomePagePosts($host: String!, $after: String, $first: Int!, $filter: PublicationPostConnectionFilter) {
+query HomePagePosts($host: String!, $after: String, $first: Int!) {
   publication(host: $host) {
     id
-    posts(after: $after, first: $first, filter: $filter) {
+    posts(after: $after, first: $first) {
       totalDocuments
       edges {
         node {

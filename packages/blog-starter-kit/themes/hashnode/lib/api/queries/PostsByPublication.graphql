@@ -31,8 +31,5 @@ query MorePostsByPublication($host: String!, $first: Int!, $after: String) {
 fragment MorePostsEdge on PostEdge {
 	node {
 		...Post
-		comments(first: 0) {
-			totalDocuments
-		}
 	}
 }

@@ -115,7 +115,6 @@ fragment PostFull on Post {
 		stickCoverToBottom
 	}
 	comments(first: 25) {
-		totalDocuments
 		edges {
 			node {
 				id

@@ -76,7 +76,7 @@ const Newsletter = (props: Props) => {
 				<PublicationFooter
 					authorName={publication.author.name}
 					title={publication.title}
-					imprint={publication.imprint}
+					imprint={publication.imprintV2?.html}
 					disableFooterBranding={publication.preferences.disableFooterBranding}
 					isTeam={publication.isTeam}
 					logo={publication.preferences.logo}

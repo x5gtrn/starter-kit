@@ -1,6 +1,8 @@
 fragment Publication on Publication {
 	id
-	imprint
+	imprintV2 {
+		html
+	}
 	title
 	displayTitle
 	url
@@ -11,15 +13,6 @@ fragment Publication on Publication {
 	headerColor
 	followersCount
 	descriptionSEO
-	features {
-		customCSS {
-			published {
-				home
-				post
-				static
-			}
-		}
-	}
 	about {
 		html
 	}
@@ -33,27 +26,8 @@ fragment Publication on Publication {
 		readTime {
 			isEnabled
 		}
-		audioBlog {
-			isEnabled
-			voiceType
-		}
 		textSelectionSharer {
 			isEnabled
-		}
-		customCSS {
-			isEnabled
-			published {
-				__typename
-				homeMinified
-				postMinified
-				staticMinified
-			}
-			draft {
-				__typename
-				homeMinified
-				postMinified
-				staticMinified
-			}
 		}
 	}
 	author {
@@ -83,7 +57,6 @@ fragment Publication on Publication {
 			id
 			label
 			url
-			priority
 			type
 			series {
 				__typename
@@ -104,20 +77,5 @@ fragment Publication on Publication {
 		youtube
 		linkedin
 		mastodon
-	}
-	integrations {
-		umamiWebsiteUUID
-		gaTrackingID
-		fbPixelID
-		hotjarSiteID
-		matomoURL
-		matomoSiteID
-		fathomSiteID
-		gTagManagerID
-		fathomCustomDomain
-		fathomCustomDomainEnabled
-		plausibleAnalyticsEnabled
-		koalaPublicKey
-		msClarityID
 	}
 }
