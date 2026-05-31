@@ -9,8 +9,8 @@ import {
 	SitemapQuery,
 	SitemapQueryVariables,
 } from '../generated/graphql';
+import { HASHNODE_GQL_ENDPOINT, createHeaders } from '../lib/api/client';
 
-const GQL_ENDPOINT = process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT;
 const MAX_POSTS = 1000;
 const Sitemap = () => null;
 
@@ -18,13 +18,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { res } = ctx;
 
 	const initialData = await request<SitemapQuery, SitemapQueryVariables>(
-		GQL_ENDPOINT,
+		HASHNODE_GQL_ENDPOINT,
 		SitemapDocument,
 		{
 			host: process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST,
 			postsCount: 20,
 			staticPagesCount: 50,
 		},
+		createHeaders(),
 	);
 
 	const publication = initialData.publication;
@@ -45,9 +46,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 		};
 
 		const data = await request<MoreSitemapPostsQuery, MoreSitemapPostsQueryVariables>(
-			GQL_ENDPOINT,
+			HASHNODE_GQL_ENDPOINT,
 			MoreSitemapPostsDocument,
 			variables,
+			createHeaders(),
 		);
 		const publication = data.publication;
 		if (!publication) {
