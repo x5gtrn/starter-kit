@@ -1,5 +1,3 @@
-const { request, gql } = require('graphql-request');
-
 const ANALYTICS_BASE_URL = 'https://hn-ping2.hashnode.com';
 const HASHNODE_ADVANCED_ANALYTICS_URL = 'https://user-analytics.hashnode.com';
 
@@ -8,6 +6,7 @@ const GQL_ENDPOINT =
 	process.env.NEXT_PUBLIC_HASHNODE_GQL_ENDPOINT || 'https://gql-beta.hashnode.com';
 const HASHNODE_API_KEY = process.env.HASHNODE_API_KEY;
 const host = process.env.NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST;
+const MAX_REDIRECT_FETCH_ATTEMPTS = 3;
 
 const getBasePath = () => {
 	if (BASE_URL && BASE_URL.indexOf('/') !== -1) {
@@ -16,10 +15,12 @@ const getBasePath = () => {
 	return undefined;
 };
 
-const getRedirectionRules = async () => {
-	const query = gql`
-		query GetRedirectionRules {
-			publication(host: "${host}") {
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const fetchRedirectionRules = async () => {
+	const query = `
+		query GetRedirectionRules($host: String!) {
+			publication(host: $host) {
 				id
 				redirectionRules {
 					source
@@ -30,18 +31,64 @@ const getRedirectionRules = async () => {
 		}
   	`;
 
-	const data = await request(
-		GQL_ENDPOINT,
-		query,
-		undefined,
-		HASHNODE_API_KEY ? { Authorization: HASHNODE_API_KEY } : undefined,
-	);
+	const headers = {
+		'Content-Type': 'application/json',
+		'Accept-Encoding': 'identity',
+	};
 
-	if (!data.publication) {
-		throw 'Please ensure you have set the env var NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST correctly.';
+	if (HASHNODE_API_KEY) {
+		headers.Authorization = HASHNODE_API_KEY;
 	}
 
-	const redirectionRules = data.publication.redirectionRules;
+	const response = await fetch(GQL_ENDPOINT, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({
+			query,
+			variables: { host },
+		}),
+	});
+
+	if (!response.ok) {
+		throw new Error(`Hashnode redirects request failed with status ${response.status}`);
+	}
+
+	const { data, errors } = await response.json();
+
+	if (errors?.length) {
+		throw new Error(errors.map((error) => error.message).join('; '));
+	}
+
+	if (!data.publication) {
+		throw new Error('Hashnode publication not found while fetching redirection rules.');
+	}
+
+	return data.publication.redirectionRules;
+};
+
+const getRedirectionRules = async () => {
+	if (!host) {
+		console.warn(
+			'Skipping Hashnode redirection rules: NEXT_PUBLIC_HASHNODE_PUBLICATION_HOST is not set.',
+		);
+		return [];
+	}
+
+	let redirectionRules = [];
+
+	for (let attempt = 1; attempt <= MAX_REDIRECT_FETCH_ATTEMPTS; attempt += 1) {
+		try {
+			redirectionRules = await fetchRedirectionRules();
+			break;
+		} catch (error) {
+			if (attempt === MAX_REDIRECT_FETCH_ATTEMPTS) {
+				console.warn('Skipping Hashnode redirection rules after repeated failures.', error);
+				return [];
+			}
+
+			await wait(300 * attempt);
+		}
+	}
 
 	// convert to next.js redirects format
 	const redirects = redirectionRules
