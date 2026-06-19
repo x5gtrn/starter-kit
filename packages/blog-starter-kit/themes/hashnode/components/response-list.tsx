@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
 import { getHashId } from '../utils/commonUtils';
+import { createHashnodePostUrl } from '../utils/urls';
 import { useAppContext } from './contexts/appContext';
 import { Button } from './custom-button';
 import { ExternalArrowSVG, HashnodeSVG } from './icons';
@@ -47,7 +48,7 @@ function ResponseList(props: Props) {
 	}, [currentFilter]);
 
 	if (post.responseCount === 0) {
-		const discussionUrl = `https://hashnode.com/discussions/post/${post.id}`;
+		const discussionUrl = createHashnodePostUrl({ id: post.id, slug: post.slug });
 		return (
 			<div className="flex h-3/5 flex-col items-center justify-center text-sm text-slate-500 dark:text-slate-400">
 				<Button

@@ -94,5 +94,8 @@ export const createPublicationOrigin = (
     const pathname = isSimpleUrl ? `/${slug}` : `/${slug}-${cuid}`;
     return `${origin}${pathname}`;
   };
+
+  export const createHashnodePostUrl = ({ id, slug }: { id: string; slug: string }) =>
+    `${getAppUrl()}/posts/${slug}/${id}`;
   
   export const createDraftPreviewUrl = (id: string) => `${getAppUrl()}/preview/${id}`;

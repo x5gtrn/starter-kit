@@ -7,6 +7,7 @@ import { twJoin } from 'tailwind-merge';
 import { formatDate } from '../utils';
 import Autolinker from '../utils/autolinker';
 import { imageReplacer } from '../utils/image';
+import { createHashnodePostUrl } from '../utils/urls';
 import { useAppContext } from './contexts/appContext';
 import { Button } from './custom-button';
 import { ExternalArrowSVG, HashnodeSVG } from './icons';
@@ -19,7 +20,8 @@ moment.extend(localizedFormat);
 export const PostComments = () => {
 	const { post } = useAppContext();
 	if (!post) return null;
-	const discussionUrl = `https://hashnode.com/discussions/post/${post.id}`;
+	const discussionUrl = createHashnodePostUrl({ id: post.id, slug: post.slug });
+	const commentCount = post.comments.edges.length;
 	const checkIfCommentByAuthor = (comment: any) => {
 		return comment.author.id.toString() === post.author.id.toString();
 	};
@@ -144,11 +146,7 @@ export const PostComments = () => {
 				<div className="flex w-full flex-row items-center md:w-auto dark:text-slate-200">
 					<h3 className="text-xl font-medium tracking-tight text-slate-900 dark:text-slate-100">
 						Comments{' '}
-						{post.responseCount > 0 ? (
-							<span>({(post.responseCount || 0) + (post.replyCount || 0)})</span>
-						) : (
-							''
-						)}
+						{commentCount > 0 ? <span>({commentCount})</span> : ''}
 					</h3>
 				</div>
 			</div>
