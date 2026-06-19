@@ -42,6 +42,7 @@ const InlinePostComments = dynamic(
 	() => import('./post-comments').then((mod) => mod.PostComments),
 	{ ssr: false },
 );
+const DISQUS_ENABLED_POST_SLUG = 'article-2026-06-19-1822';
 
 const PublicationSubscribeStandOut = dynamic(() => import('./publication-subscribe-standout'), {
 	ssr: false,
@@ -81,6 +82,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 	const [canLoadEmbeds, setCanLoadEmbeds] = useState(false);
 	useEmbeds({ enabled: canLoadEmbeds });
 	const absolutePostURL = createPostUrl(post, post.publication);
+	const shouldShowDisqusComments = post.slug === DISQUS_ENABLED_POST_SLUG;
 	if (post.hasLatexInPost) {
 		setTimeout(() => {
 			handleMathJax(true);
@@ -313,7 +315,9 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 						)}
 
 						<AboutAuthor />
-						<DisqusComments key={post.id} url={post.url} identifier={post.id} title={post.title} />
+						{shouldShowDisqusComments && (
+							<DisqusComments key={post.id} url={post.url} identifier={post.id} title={post.title} />
+						)}
 						<div className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800">
 							{!post.preferences.disableComments ? (
 								<InlinePostComments />
