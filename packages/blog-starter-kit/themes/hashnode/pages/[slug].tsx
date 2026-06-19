@@ -230,6 +230,16 @@ type PostLikedByQuery = {
 	} | null;
 };
 
+function getTextContent(html: string) {
+	return html
+		.replace(/<script[\s\S]*?<\/script>/gi, ' ')
+		.replace(/<style[\s\S]*?<\/style>/gi, ' ')
+		.replace(/<[^>]+>/g, ' ')
+		.replace(/&quot;/g, '"')
+		.replace(/&amp;/g, '&')
+		.replace(/\s+/g, ' ');
+}
+
 async function getPostLikedByCount(postId: string, fallbackCount: number) {
 	let count = 0;
 	let after: string | null | undefined;
@@ -260,6 +270,47 @@ async function getPostLikedByCount(postId: string, fallbackCount: number) {
 	return count;
 }
 
+async function getHashnodeDiscussionUpvoteCount(post: PostFullFragment, fallbackCount: number) {
+	try {
+		const response = await fetch(`https://hashnode.com/posts/${post.slug}/${post.id}`, {
+			headers: {
+				'user-agent': 'Mozilla/5.0',
+			},
+		});
+
+		if (!response.ok) {
+			return fallbackCount;
+		}
+
+		const text = getTextContent(await response.text());
+		const marker = `${post.readTimeInMinutes} min read`;
+		const markerIndex = text.indexOf(marker);
+		if (markerIndex === -1) {
+			return fallbackCount;
+		}
+
+		const upvoteText = text.slice(markerIndex + marker.length, markerIndex + marker.length + 80);
+		const match = upvoteText.match(/^\s+(\d+)(?=\s+(?:#|Responses|Comment|$))/);
+		if (!match) {
+			return fallbackCount;
+		}
+
+		return Number(match[1]);
+	} catch (error) {
+		console.warn('Failed to fetch Hashnode discussion upvote count', { error, postId: post.id });
+		return fallbackCount;
+	}
+}
+
+async function getPostUpvoteCount(post: PostFullFragment) {
+	const likedByCount = await getPostLikedByCount(post.id, post.reactionCount);
+	if (likedByCount > 0) {
+		return likedByCount;
+	}
+
+	return getHashnodeDiscussionUpvoteCount(post, likedByCount);
+}
+
 export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) => {
 	if (!params) {
 		throw new Error('No params');
@@ -274,17 +325,14 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 	]);
 
 	if (postData.publication?.post) {
-		const likedByCount = await getPostLikedByCount(
-			postData.publication.post.id,
-			postData.publication.post.reactionCount,
-		);
+		const upvoteCount = await getPostUpvoteCount(postData.publication.post);
 
 		return {
 			props: {
 				type: 'post',
 				post: {
 					...postData.publication.post,
-					reactionCount: likedByCount,
+					reactionCount: upvoteCount,
 				},
 				morePosts: morePostsData.publication?.posts.edges ?? [],
 				publication: postData.publication,
