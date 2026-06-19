@@ -38,6 +38,10 @@ type Props = {
 
 const PostCommentsSidebar = dynamic(() => import('./post-comments-sidebar'), { ssr: false });
 const DisqusComments = dynamic(() => import('./disqus-comments'), { ssr: false });
+const InlinePostComments = dynamic(
+	() => import('./post-comments').then((mod) => mod.PostComments),
+	{ ssr: false },
+);
 
 const PublicationSubscribeStandOut = dynamic(() => import('./publication-subscribe-standout'), {
 	ssr: false,
@@ -64,7 +68,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 			isApproved: true,
 		};
 	});
-
 
 	const handleOpenComments = () => {
 		setShowCommentsSheet(true);
@@ -144,7 +147,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 					{/* Article title */}
 					<div
 						className={twJoin(
-							`font-heading mt-6 break-words px-4 text-center text-3xl font-extrabold text-slate-900 dark:text-white md:mt-10 md:px-5 md:text-4xl lg:px-8 xl:px-20 xl:text-5xl`,
+							`font-heading mt-6 break-words px-4 text-center text-3xl font-extrabold text-slate-900 md:mt-10 md:px-5 md:text-4xl lg:px-8 xl:px-20 xl:text-5xl dark:text-white`,
 							post.subtitle ? `mb-5` : `mb-8 md:mb-14`,
 						)}
 					>
@@ -156,7 +159,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 					{/* Article subtitle */}
 					{post.subtitle && (
 						<div className="font-heading mb-8 px-4 text-center md:mb-14 md:px-5 lg:px-8 xl:px-20">
-							<h2 className="text-2xl leading-snug text-slate-700 dark:text-slate-400 md:text-3xl xl:text-3xl">
+							<h2 className="text-2xl leading-snug text-slate-700 md:text-3xl xl:text-3xl dark:text-slate-400">
 								{post.subtitle}
 							</h2>
 						</div>
@@ -169,11 +172,11 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 									key={coAuthor.id?.toString()}
 									style={{ zIndex: index + 1 }}
 									className={twJoin(
-										'overflow-hidden rounded-full  bg-slate-200  dark:bg-white/20 md:mr-3',
+										'overflow-hidden rounded-full  bg-slate-200  md:mr-3 dark:bg-white/20',
 										index > 0 ? 'hidden md:block' : '',
 										authorsArray.length === 1
 											? 'h-10 w-10 md:h-12 md:w-12'
-											: 'h-8 w-8 border-2 border-slate-100 dark:border-slate-800 md:h-9 md:w-9 [&:not(:first-of-type)]:-ml-3 md:[&:not(:first-of-type)]:-ml-6 ',
+											: 'h-8 w-8 border-2 border-slate-100 md:h-9 md:w-9 dark:border-slate-800 [&:not(:first-of-type)]:-ml-3 md:[&:not(:first-of-type)]:-ml-6 ',
 									)}
 								>
 									<ProfileImage user={coAuthor} width="200" height="200" hoverDisabled={true} />
@@ -183,7 +186,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 								<button
 									onClick={openCoAuthorModal}
 									style={{ zIndex: post.coAuthors?.length }}
-									className="border-1-1/2 relative -ml-3 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-slate-100 bg-slate-100 px-1 group-hover:border-slate-200 dark:border-slate-800 dark:bg-slate-600 dark:text-white group-hover:dark:border-slate-700 md:hidden"
+									className="border-1-1/2 relative -ml-3 flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-slate-100 bg-slate-100 px-1 group-hover:border-slate-200 md:hidden dark:border-slate-800 dark:bg-slate-600 dark:text-white group-hover:dark:border-slate-700"
 								>
 									<p className="truncate text-xs font-normal">+{post.coAuthors.length}</p>
 								</button>
@@ -191,7 +194,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 							{!post.coAuthors?.length && (
 								<a
 									href={`https://hashnode.com/@${post.author.username}`}
-									className="ml-2 font-semibold text-slate-600 dark:text-white md:ml-0"
+									className="ml-2 font-semibold text-slate-600 md:ml-0 dark:text-white"
 								>
 									<span>{post.author.name}</span>
 								</a>
@@ -273,7 +276,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 					)}
 				>
 					<div className="relative">
-
 						{/* {isPublicationPost && renderPinnedWidgets(props.widgets, 'top')} */}
 
 						<div id="post-content-parent" className="relative mb-10 pb-14">
@@ -311,12 +313,16 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 						)}
 
 						<AboutAuthor />
-						<DisqusComments
-							key={post.id}
-							url={post.url}
-							identifier={post.id}
-							title={post.title}
-						/>
+						<DisqusComments key={post.id} url={post.url} identifier={post.id} title={post.title} />
+						<div className="mt-14 border-t border-slate-200 pt-8 dark:border-slate-800">
+							{!post.preferences.disableComments ? (
+								<InlinePostComments />
+							) : (
+								<div className="py-8 text-center text-base text-slate-500 dark:text-slate-400">
+									The comments have been disabled by the author for this article
+								</div>
+							)}
+						</div>
 					</div>
 				</section>
 			</div>

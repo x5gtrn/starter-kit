@@ -44,7 +44,7 @@ export const PostComments = () => {
 		return (
 			<div
 				key={comment.id}
-				className="border-b-1/2 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 md:flex-nowrap"
+				className="border-b-1/2 bg-white px-4 py-4 md:flex-nowrap dark:border-slate-700 dark:bg-slate-900"
 			>
 				<div className="flex flex-col">
 					<div className="flex justify-between text-slate-900 dark:text-slate-50">
@@ -141,7 +141,7 @@ export const PostComments = () => {
 	return (
 		<div id="write-comment" className="mx-2 flex flex-col gap-5">
 			<div className="relative z-50 flex flex-row flex-wrap items-center justify-between border-b bg-white p-4 dark:border-slate-800 dark:bg-transparent">
-				<div className="flex w-full flex-row items-center dark:text-slate-200 md:w-auto">
+				<div className="flex w-full flex-row items-center md:w-auto dark:text-slate-200">
 					<h3 className="text-xl font-medium tracking-tight text-slate-900 dark:text-slate-100">
 						Comments{' '}
 						{post.responseCount > 0 ? (
@@ -152,8 +152,7 @@ export const PostComments = () => {
 					</h3>
 				</div>
 			</div>
-			<div>{commentsList}</div>
-			<div className="px-2">
+			<div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
 				<Button
 					as="a"
 					href={discussionUrl}
@@ -166,6 +165,7 @@ export const PostComments = () => {
 					className="border-primary-600 dark:border-primary-500 text-primary-600 dark:text-primary-500 !font-normal"
 				/>
 			</div>
+			<div>{commentsList}</div>
 		</div>
 	);
 };
