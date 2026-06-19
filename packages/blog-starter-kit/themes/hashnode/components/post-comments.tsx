@@ -22,6 +22,7 @@ export const PostComments = () => {
 	if (!post) return null;
 	const discussionUrl = createHashnodePostUrl({ id: post.id, slug: post.slug });
 	const commentCount = post.comments.edges.length;
+	const reactionCount = post.reactionCount || 0;
 	const checkIfCommentByAuthor = (comment: any) => {
 		return comment.author.id.toString() === post.author.id.toString();
 	};
@@ -151,17 +152,38 @@ export const PostComments = () => {
 				</div>
 			</div>
 			<div className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-				<Button
-					as="a"
-					href={discussionUrl}
-					target="_blank"
-					type="outline"
-					rel="noopener noreferrer"
-					icon={<HashnodeSVG className="h-5 w-5 stroke-current" />}
-					label="Add a comment"
-					secondaryIcon={<ExternalArrowSVG className="h-4 w-4 stroke-current" />}
-					className="border-primary-600 dark:border-primary-500 text-primary-600 dark:text-primary-500 !font-normal"
-				/>
+				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+					<div className="flex flex-col">
+						<span className="text-sm font-medium text-slate-900 dark:text-slate-100">
+							{reactionCount} Upvote{reactionCount === 1 ? '' : 's'}
+						</span>
+						<span className="text-xs text-slate-500 dark:text-slate-400">Upvote on Hashnode</span>
+					</div>
+					<div className="flex flex-col gap-3 md:flex-row md:items-center">
+						<Button
+							as="a"
+							href={discussionUrl}
+							target="_blank"
+							type="outline"
+							rel="noopener noreferrer"
+							icon={<HashnodeSVG className="h-5 w-5 stroke-current" />}
+							label="Upvote"
+							secondaryIcon={<ExternalArrowSVG className="h-4 w-4 stroke-current" />}
+							className="border-primary-600 dark:border-primary-500 text-primary-600 dark:text-primary-500 !font-normal"
+						/>
+						<Button
+							as="a"
+							href={discussionUrl}
+							target="_blank"
+							type="outline"
+							rel="noopener noreferrer"
+							icon={<HashnodeSVG className="h-5 w-5 stroke-current" />}
+							label="Add a comment"
+							secondaryIcon={<ExternalArrowSVG className="h-4 w-4 stroke-current" />}
+							className="border-primary-600 dark:border-primary-500 text-primary-600 dark:text-primary-500 !font-normal"
+						/>
+					</div>
+				</div>
 			</div>
 			<div>{commentsList}</div>
 		</div>

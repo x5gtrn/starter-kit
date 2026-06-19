@@ -200,6 +200,66 @@ type Params = {
 	slug: string;
 };
 
+const POST_LIKED_BY_QUERY = /* GraphQL */ `
+	query PostLikedBy($id: ID!, $first: Int!, $after: String) {
+		post(id: $id) {
+			likedBy(first: $first, after: $after) {
+				edges {
+					node {
+						id
+					}
+				}
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+			}
+		}
+	}
+`;
+
+type PostLikedByQuery = {
+	post?: {
+		likedBy: {
+			edges: Array<unknown>;
+			pageInfo: {
+				hasNextPage?: boolean | null;
+				endCursor?: string | null;
+			};
+		};
+	} | null;
+};
+
+async function getPostLikedByCount(postId: string, fallbackCount: number) {
+	let count = 0;
+	let after: string | null | undefined;
+
+	try {
+		do {
+			const data = await requestHashnode<
+				PostLikedByQuery,
+				{ id: string; first: number; after?: string }
+			>(POST_LIKED_BY_QUERY, {
+				id: postId,
+				first: 50,
+				...(after ? { after } : {}),
+			});
+			const likedBy = data.post?.likedBy;
+			if (!likedBy) {
+				return fallbackCount;
+			}
+
+			count += likedBy.edges.length;
+			after = likedBy.pageInfo.hasNextPage ? likedBy.pageInfo.endCursor : null;
+		} while (after);
+	} catch (error) {
+		console.warn('Failed to fetch Hashnode likedBy count', { error, postId });
+		return fallbackCount;
+	}
+
+	return count;
+}
+
 export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) => {
 	if (!params) {
 		throw new Error('No params');
@@ -214,10 +274,18 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 	]);
 
 	if (postData.publication?.post) {
+		const likedByCount = await getPostLikedByCount(
+			postData.publication.post.id,
+			postData.publication.post.reactionCount,
+		);
+
 		return {
 			props: {
 				type: 'post',
-				post: postData.publication.post,
+				post: {
+					...postData.publication.post,
+					reactionCount: likedByCount,
+				},
 				morePosts: morePostsData.publication?.posts.edges ?? [],
 				publication: postData.publication,
 			},
