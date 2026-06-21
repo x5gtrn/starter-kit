@@ -24,14 +24,6 @@ export const Header = (props: Props) => {
 			<div className="container mx-auto px-2 md:px-4 2xl:px-10">
 				<div className="relative z-40 flex flex-row items-center justify-between pb-2 pt-8 md:mb-4">
 					<div className="flex flex-row items-center py-1">
-						{/* Navigation for mobile view */}
-						<div
-							className={twJoin(
-								'md:hidden','dark:text-white',
-							)}
-						>
-							<HeaderLeftSidebar publication={publication} />
-						</div>
 						<div className="hidden md:block">
 							<PublicationLogo publication={publication} size="lg" withProfileImage />
 						</div>
@@ -39,9 +31,12 @@ export const Header = (props: Props) => {
 
 					<div
 						className={twJoin(
-							'flex flex-row items-center','dark:text-white',
+							'flex flex-row items-center py-1','dark:text-white',
 						)}
 					>
+						<div className="md:hidden">
+							<HeaderLeftSidebar publication={publication} />
+						</div>
 						<HeaderBlogSearch publication={publication} />
 					</div>
 				</div>

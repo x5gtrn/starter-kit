@@ -23,7 +23,11 @@ export const PostComments = () => {
 	const { post } = useAppContext();
 	if (!post) return null;
 	const discussionUrl = createHashnodePostUrl({ id: post.id, slug: post.slug });
-	const commentCount = post.responseCount + post.replyCount;
+	const countComments = (comment: CommentNode): number =>
+		1 +
+		(comment.replies?.edges ?? []).reduce((total, reply) => total + countComments(reply.node), 0);
+	const comments = post.comments.edges.map((edge) => edge.node as CommentNode);
+	const commentCount = comments.reduce((total, comment) => total + countComments(comment), 0);
 	const reactionCount = post.reactionCount || 0;
 	const checkIfCommentByAuthor = (comment: CommentNode) => {
 		return comment.author.id.toString() === post.author.id.toString();
@@ -40,8 +44,7 @@ export const PostComments = () => {
 		// Router.push(url);
 	};
 
-	const commentsList = post.comments.edges.map((edge) => {
-		const comment = edge.node as CommentNode;
+	const commentsList = comments.map((comment) => {
 		return (
 			<div
 				key={comment.id}

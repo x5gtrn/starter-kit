@@ -54,9 +54,8 @@ function PublicationSidebar(props: Props) {
             toggleSidebar();
           }}
           className={twJoin(
-            'fixed bottom-0 left-0 top-0 z-50 flex w-80 transform flex-col border-slate-200 bg-white text-black shadow-2xl duration-300 ease-out dark:border-slate-800 dark:bg-slate-900 dark:text-white',
-            // When the sheet is mounted, we want to slide it in from the left.
-            !isMounted ? '-translate-x-96' : 'translate-x-0',
+            'fixed bottom-0 right-0 top-0 z-50 flex w-80 transform flex-col border-slate-200 bg-white text-black shadow-2xl duration-300 ease-out dark:border-slate-800 dark:bg-slate-900 dark:text-white',
+            !isMounted ? 'translate-x-96' : 'translate-x-0',
           )}
         >
           <div
