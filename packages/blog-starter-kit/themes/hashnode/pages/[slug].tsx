@@ -8,6 +8,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useRef } from 'react';
 import { twJoin } from 'tailwind-merge';
+import type { CommentConnection } from '../components/comment-types';
 import { Container } from '../components/container';
 import { AppProvider } from '../components/contexts/appContext';
 import { Header } from '../components/header';
@@ -200,6 +201,51 @@ type Params = {
 	slug: string;
 };
 
+const POST_COMMENTS_QUERY = /* GraphQL */ `
+	fragment CommentFields on Comment {
+		id
+		dateAdded
+		totalReactions
+		content {
+			markdown
+			html
+		}
+		author {
+			id
+			name
+			username
+			profilePicture
+		}
+	}
+
+	query PostComments($id: ID!, $commentsFirst: Int!, $repliesFirst: Int!) {
+		post(id: $id) {
+			comments(first: $commentsFirst) {
+				pageInfo {
+					hasNextPage
+					endCursor
+				}
+				edges {
+					node {
+						...CommentFields
+						replies(first: $repliesFirst) {
+							pageInfo {
+								hasNextPage
+								endCursor
+							}
+							edges {
+								node {
+									...CommentFields
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+`;
+
 const POST_LIKED_BY_QUERY = /* GraphQL */ `
 	query PostLikedBy($id: ID!, $first: Int!, $after: String) {
 		post(id: $id) {
@@ -227,6 +273,12 @@ type PostLikedByQuery = {
 				endCursor?: string | null;
 			};
 		};
+	} | null;
+};
+
+type PostCommentsQuery = {
+	post?: {
+		comments: CommentConnection;
 	} | null;
 };
 
@@ -311,6 +363,24 @@ async function getPostUpvoteCount(post: PostFullFragment) {
 	return getHashnodeDiscussionUpvoteCount(post, likedByCount);
 }
 
+async function getPostComments(postId: string) {
+	try {
+		const data = await requestHashnode<
+			PostCommentsQuery,
+			{ id: string; commentsFirst: number; repliesFirst: number }
+		>(POST_COMMENTS_QUERY, {
+			id: postId,
+			commentsFirst: 50,
+			repliesFirst: 50,
+		});
+
+		return data.post?.comments ?? null;
+	} catch (error) {
+		console.warn('Failed to fetch nested Hashnode comments', { error, postId });
+		return null;
+	}
+}
+
 export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) => {
 	if (!params) {
 		throw new Error('No params');
@@ -325,15 +395,20 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 	]);
 
 	if (postData.publication?.post) {
-		const upvoteCount = await getPostUpvoteCount(postData.publication.post);
+		const [upvoteCount, comments] = await Promise.all([
+			getPostUpvoteCount(postData.publication.post),
+			getPostComments(postData.publication.post.id),
+		]);
+		const post = {
+			...postData.publication.post,
+			reactionCount: upvoteCount,
+			...(comments ? { comments } : {}),
+		} as PostFullFragment;
 
 		return {
 			props: {
 				type: 'post',
-				post: {
-					...postData.publication.post,
-					reactionCount: upvoteCount,
-				},
+				post,
 				morePosts: morePostsData.publication?.posts.edges ?? [],
 				publication: postData.publication,
 			},

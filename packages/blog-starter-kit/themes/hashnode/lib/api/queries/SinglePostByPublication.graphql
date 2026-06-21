@@ -24,17 +24,17 @@ fragment PostFull on Post {
 			domain {
 				host
 				ready
-        	}
+			}
 		}
 		urlPattern
 		features {
 			newsletter {
-            	isEnabled
-          	}
+				isEnabled
+			}
 			readTime {
 				isEnabled
 			}
-			 textSelectionSharer {
+			textSelectionSharer {
 				isEnabled
 			}
 		}
@@ -70,8 +70,8 @@ fragment PostFull on Post {
 		username
 		profilePicture
 		socialMediaLinks {
-          twitter
-        }
+			twitter
+		}
 		bio {
 			html
 		}
@@ -84,7 +84,7 @@ fragment PostFull on Post {
 			html
 		}
 		profilePicture
-  	}
+	}
 	title
 	content {
 		markdown
@@ -114,17 +114,21 @@ fragment PostFull on Post {
 		disableComments
 		stickCoverToBottom
 	}
-	comments(first: 25) {
+	comments(first: 50) {
 		edges {
 			node {
 				id
 				dateAdded
 				totalReactions
-				replies(first: 10) {
+				replies(first: 50) {
+					pageInfo {
+						hasNextPage
+					}
 					edges {
 						node {
 							id
 							dateAdded
+							totalReactions
 							author {
 								name
 								id

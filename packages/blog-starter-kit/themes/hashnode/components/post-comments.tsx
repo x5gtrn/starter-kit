@@ -1,4 +1,5 @@
 import moment from 'dayjs';
+import type { MouseEvent } from 'react';
 
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -8,6 +9,7 @@ import { formatDate } from '../utils';
 import Autolinker from '../utils/autolinker';
 import { imageReplacer } from '../utils/image';
 import { createHashnodePostUrl } from '../utils/urls';
+import { CommentNode } from './comment-types';
 import { useAppContext } from './contexts/appContext';
 import { Button } from './custom-button';
 import { ExternalArrowSVG, HashnodeSVG } from './icons';
@@ -21,13 +23,13 @@ export const PostComments = () => {
 	const { post } = useAppContext();
 	if (!post) return null;
 	const discussionUrl = createHashnodePostUrl({ id: post.id, slug: post.slug });
-	const commentCount = post.comments.edges.length;
+	const commentCount = post.responseCount + post.replyCount;
 	const reactionCount = post.reactionCount || 0;
-	const checkIfCommentByAuthor = (comment: any) => {
+	const checkIfCommentByAuthor = (comment: CommentNode) => {
 		return comment.author.id.toString() === post.author.id.toString();
 	};
 
-	const loadProfile = (e: any, comment: any) => {
+	const loadProfile = (e: MouseEvent<HTMLAnchorElement>, comment: CommentNode) => {
 		e.preventDefault();
 		const isPublication = true;
 		const url = `${isPublication ? 'https://hashnode.com/@' : '/@'}${comment.author.username}`;
@@ -38,15 +40,12 @@ export const PostComments = () => {
 		// Router.push(url);
 	};
 
-	const noop = (e: any) => {
-		e.preventDefault();
-	};
-
 	const commentsList = post.comments.edges.map((edge) => {
-		const comment = edge.node as any;
+		const comment = edge.node as CommentNode;
 		return (
 			<div
 				key={comment.id}
+				id={comment.id}
 				className="border-b-1/2 bg-white px-4 py-4 md:flex-nowrap dark:border-slate-700 dark:bg-slate-900"
 			>
 				<div className="flex flex-col">
@@ -60,12 +59,8 @@ export const PostComments = () => {
 									<p className="flex items-center truncate">
 										<a
 											className="truncate"
-											onClick={!comment.author.deactivated ? (e) => loadProfile(e, comment) : noop}
-											href={
-												!comment.author.deactivated
-													? `${true ? 'https://hashnode.com/@' : '/@'}${comment.author.username}`
-													: '#'
-											}
+											onClick={(e) => loadProfile(e, comment)}
+											href={`https://hashnode.com/@${comment.author.username}`}
 										>
 											<span
 												title={comment.author.name}
@@ -146,8 +141,7 @@ export const PostComments = () => {
 			<div className="relative z-50 flex flex-row flex-wrap items-center justify-between border-b bg-white p-4 dark:border-slate-800 dark:bg-transparent">
 				<div className="flex w-full flex-row items-center md:w-auto dark:text-slate-200">
 					<h3 className="text-xl font-medium tracking-tight text-slate-900 dark:text-slate-100">
-						Comments{' '}
-						{commentCount > 0 ? <span>({commentCount})</span> : ''}
+						Comments {commentCount > 0 ? <span>({commentCount})</span> : ''}
 					</h3>
 				</div>
 			</div>
