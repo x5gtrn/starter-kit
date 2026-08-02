@@ -28,6 +28,7 @@ import {
 	StaticPageFragment,
 } from '../generated/graphql';
 import { requestHashnode } from '../lib/api/request';
+import { resolveEmbedCards } from '../lib/embeds';
 
 type PostProps = {
 	type: 'post';
@@ -395,13 +396,16 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
 	]);
 
 	if (postData.publication?.post) {
-		const [upvoteCount, comments] = await Promise.all([
-			getPostUpvoteCount(postData.publication.post),
-			getPostComments(postData.publication.post.id),
+		const basePost = postData.publication.post;
+		const [upvoteCount, comments, contentHtml] = await Promise.all([
+			getPostUpvoteCount(basePost),
+			getPostComments(basePost.id),
+			resolveEmbedCards(basePost.content?.html ?? ''),
 		]);
 		const post = {
-			...postData.publication.post,
+			...basePost,
 			reactionCount: upvoteCount,
+			...(basePost.content ? { content: { ...basePost.content, html: contentHtml } } : {}),
 			...(comments ? { comments } : {}),
 		} as PostFullFragment;
 

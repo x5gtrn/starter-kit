@@ -20,7 +20,6 @@ const TocSidebar = dynamic(() => import('./toc-sidebar'), { ssr: false });
 const OtherPostsOfAccount = dynamic(() => import('./other-posts-of-account'), { ssr: false });
 const AboutAuthor = dynamic(() => import('./about-author'), { ssr: false });
 
-import { useEmbeds } from '@starter-kit/utils/renderer/hooks/useEmbeds';
 import { loadIframeResizer } from '@starter-kit/utils/renderer/services/embed';
 import { Fragment } from 'react';
 import { BookOpenSVG } from './icons/svgs';
@@ -79,8 +78,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 	);
 	const top3FilteredPosts = filteredPostsWithoutCurrentPost.slice(0, 3);
 	const [, setMobMount] = useState(false);
-	const [canLoadEmbeds, setCanLoadEmbeds] = useState(false);
-	useEmbeds({ enabled: canLoadEmbeds });
 	const absolutePostURL = createPostUrl(post, post.publication);
 	const shouldShowDisqusComments = post.slug === DISQUS_ENABLED_POST_SLUG;
 	if (post.hasLatexInPost) {
@@ -111,7 +108,6 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 		(async () => {
 			await loadIframeResizer();
 			triggerCustomWidgetEmbed(post.publication?.id.toString());
-			setCanLoadEmbeds(true);
 		})();
 	}, []);
 	const authorsArray = [post.author, ...(post.coAuthors || [])];
