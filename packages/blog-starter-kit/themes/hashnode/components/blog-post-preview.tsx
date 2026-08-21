@@ -8,6 +8,7 @@ import { BookOpenSVG, FileLineChartSVG, PinSVG } from './icons/svgs';
 import { getBlurHash, resizeImage } from '../utils/image';
 import { kFormatter } from '../utils/image';
 import CustomImage from './custom-image';
+import { MIN_VIEWS_TO_DISPLAY } from '../utils/const';
 import { DEFAULT_AVATAR, blurImageDimensions } from '../utils/const/images';
 import { PostThumbnailFragment } from '../generated/graphql';
 import { getDefaultPostCoverImageUrl } from '../utils/commonUtils';
@@ -114,7 +115,7 @@ function BlogPostPreview(props: {
                 <span>{post.readTimeInMinutes} min read </span>
               </Link>
             ) : null}
-            {post.views && features.viewCount.isEnabled ? (
+            {Number(post.views) >= MIN_VIEWS_TO_DISPLAY && features.viewCount.isEnabled ? (
               <Link href={postURL} aria-label={`${post.views} views`} className="mr-2 flex flex-row items-center">
                 <FileLineChartSVG className="mr-1 h-4 w-4 fill-current" />
                 <span>{kFormatter(post.views)} views</span>

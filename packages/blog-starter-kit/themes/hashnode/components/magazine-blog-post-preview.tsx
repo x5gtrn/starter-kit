@@ -3,6 +3,7 @@ import Link from 'next/link';
 import CustomImage from './custom-image';
 import { BookOpenSVG, ChartMixedSVG } from './icons/svgs';
 import { getDefaultPostCoverImageUrl } from '../utils/commonUtils';
+import { MIN_VIEWS_TO_DISPLAY } from '../utils/const';
 import { blurImageDimensions } from '../utils/const/images';
 import { getBlurHash, resizeImage } from '../utils/image';
 import { kFormatter } from '../utils/image';
@@ -87,10 +88,10 @@ function BlogPostPreview(props: {
                 </p>
               </>
             ) : null}
-            {post.readTimeInMinutes && Number(post.views) > 0 && publication.features.viewCount.isEnabled ? (
+            {post.readTimeInMinutes && Number(post.views) >= MIN_VIEWS_TO_DISPLAY && publication.features.viewCount.isEnabled ? (
               <p className="mx-2 font-bold text-slate-500 dark:text-slate-400">&middot;</p>
             ) : null}
-            {Number(post.views) > 0 && publication.features.viewCount.isEnabled ? (
+            {Number(post.views) >= MIN_VIEWS_TO_DISPLAY && publication.features.viewCount.isEnabled ? (
               <p className="text-slate-500 dark:text-slate-400">
                 <Link
                   href={postURL}

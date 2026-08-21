@@ -6,6 +6,7 @@ import { twJoin } from 'tailwind-merge';
 import CustomImage from './custom-image';
 import { BookOpenSVG, ChartMixedSVG, PinSVG } from './icons/svgs';
 import { getDefaultPostCoverImageUrl } from '../utils/commonUtils';
+import { MIN_VIEWS_TO_DISPLAY } from '../utils/const';
 import { DEFAULT_AVATAR, blurImageDimensions } from '../utils/const/images';
 import { getBlurHash, kFormatter, resizeImage } from '../utils/image';
 
@@ -133,10 +134,10 @@ const FeaturedPosts = (props: {
                         </Link>
                       </p>
                     ) : null}
-                    {post.readTimeInMinutes && Number(post.views) > 0 && publication.features.viewCount.isEnabled && (
+                    {post.readTimeInMinutes && Number(post.views) >= MIN_VIEWS_TO_DISPLAY && publication.features.viewCount.isEnabled && (
                       <p className="mx-2 font-bold text-slate-500 dark:text-slate-400">&middot;</p>
                     )}
-                    {Number(post.views) > 0 && publication.features.viewCount.isEnabled && (
+                    {Number(post.views) >= MIN_VIEWS_TO_DISPLAY && publication.features.viewCount.isEnabled && (
                       <>
                         <p className="text-slate-500 dark:text-slate-400">
                           <Link

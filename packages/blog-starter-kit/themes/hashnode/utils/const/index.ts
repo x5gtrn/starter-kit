@@ -5,6 +5,8 @@ export const DEFAULT_AVATAR =
 
 export const MAX_MAIN_NAV_LINKS = 7;
 
+export const MIN_VIEWS_TO_DISPLAY = 1000;
+
 export const DEFAULT_COVER =
 	'https://cdn.hashnode.com/res/hashnode/image/upload/v1683525272978/MB5H_kgOC.png?auto=format';
 
