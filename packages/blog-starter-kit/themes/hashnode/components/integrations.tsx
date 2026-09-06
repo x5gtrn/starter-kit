@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useAppContext } from './contexts/appContext';
 
+const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
+
 type LegacyPublicationIntegrations = {
 	gaTrackingID?: string | null;
 	fbPixelID?: string | null;
@@ -104,11 +106,23 @@ export function Integrations() {
     })(window, document, "clarity", "script", '${msClarityID}');`;
 
 	useEffect(() => {
-		// @ts-ignore
-		window.gtag('config', gaTrackingID, {
-			transport_url: 'https://ping.hashnode.com',
-			first_party_collection: true,
-		});
+		// Avoid polluting the GA property with hits from local development.
+		if (window.location.hostname === 'localhost') return;
+
+		if (GA_TRACKING_ID) {
+			// @ts-ignore
+			window.gtag('config', GA_TRACKING_ID);
+		}
+
+		// Legacy: a GA ID configured through Hashnode's publication integrations,
+		// which are proxied through ping.hashnode.com.
+		if (gaTrackingID) {
+			// @ts-ignore
+			window.gtag('config', gaTrackingID, {
+				transport_url: 'https://ping.hashnode.com',
+				first_party_collection: true,
+			});
+		}
 	}, []);
 
 	return (
