@@ -1,6 +1,7 @@
 import { Analytics } from './analytics';
 import { Integrations } from './integrations';
 import { Meta } from './meta';
+import { OpenPanel } from './openpanel';
 import { Scripts } from './scripts';
 
 type Props = {
@@ -12,6 +13,7 @@ export const Layout = ({ children }: Props) => {
 		<>
 			<Meta />
 			<Scripts />
+			<OpenPanel />
 			<div className="min-h-screen bg-white dark:bg-neutral-950">
 				<main>{children}</main>
 			</div>
