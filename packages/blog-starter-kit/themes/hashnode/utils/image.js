@@ -91,24 +91,32 @@ export const kFormatter = (num) => {
 };
 
 export const imageReplacer = (content, lazyLoad = false) => {
-  var regex = /<img src="([^"]+)"/g;
-  var srcVals = content.match(regex);
-
-  if (!srcVals) {
+  if (!content) {
     return content;
   }
 
-  var map = {};
-  srcVals.forEach((src) => {
-    src = src.split('src=')[1].replace(/"/g, '');
-    map[src] = _resizeImage(src, {});
-  });
-  var keys = Object.keys(map);
-  keys.forEach((oldSrc) => {
-    content = content.replace(oldSrc, map[oldSrc]);
-  });
-  if (lazyLoad) {
-    content = content.replace(/<img/g, '<img loading="lazy"');
+  var regex = /<img src="([^"]+)"/g;
+  var srcVals = content.match(regex);
+
+  if (srcVals) {
+    var map = {};
+    srcVals.forEach((src) => {
+      src = src.split('src=')[1].replace(/"/g, '');
+      map[src] = _resizeImage(src, {});
+    });
+    var keys = Object.keys(map);
+    keys.forEach((oldSrc) => {
+      content = content.replace(oldSrc, map[oldSrc]);
+    });
+    if (lazyLoad) {
+      content = content.replace(/<img/g, '<img loading="lazy"');
+    }
   }
+
+  content = content.replace(
+    /<table(\s[^>]*)?>([\s\S]*?)<\/table>/g,
+    (match) => `<div class="hn-table">${match}</div>`,
+  );
+
   return content;
 };
