@@ -13,6 +13,7 @@ import { MorePostsEdgeFragment, PostFullFragment } from '../generated/graphql';
 import { blurImageDimensions } from '../utils/const/images';
 import { getBlurHash, imageReplacer } from '../utils/image';
 import CoAuthorsModal from './co-authors-modal';
+import ImageLightbox from './image-lightbox';
 import CustomImage from './custom-image';
 import ProfileImage from './profile-image';
 import { extractTocFromDom } from './toc-sidebar';
@@ -86,11 +87,26 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 		}, 500);
 	}
 	const [isCoAuthorModalVisible, setIsCoAuthorModalVisible] = useState(false);
+	const [activeImage, setActiveImage] = useState<{ src: string; alt: string } | null>(null);
 	const closeCoAuthorModal = () => {
 		setIsCoAuthorModalVisible(false);
 	};
 	const openCoAuthorModal = () => {
 		setIsCoAuthorModalVisible(true);
+	};
+
+	const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		const target = e.target as HTMLElement;
+		if (target && target.tagName === 'IMG') {
+			const img = target as HTMLImageElement;
+			const imageSrc = img.currentSrc || img.src;
+			if (imageSrc) {
+				setActiveImage({
+					src: imageSrc,
+					alt: img.alt || '',
+				});
+			}
+		}
 	};
 	useEffect(() => {
 		if (screen.width <= 425) {
@@ -282,6 +298,7 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 									id="post-content-wrapper"
 									ref={postContentEle}
 									className="prose prose-lg min-h-30 dark:prose-dark xl:prose-xl mx-auto mb-10 break-words"
+									onClick={handleContentClick}
 									// eslint-disable-next-line react/no-danger
 									dangerouslySetInnerHTML={{
 										__html: memoizedPostContent,
@@ -338,6 +355,13 @@ export const PostHeader = ({ post, morePosts }: Props) => {
 				/>
 			)}
 			{isCoAuthorModalVisible && <CoAuthorsModal closeModal={closeCoAuthorModal} />}
+			{activeImage && (
+				<ImageLightbox
+					src={activeImage.src}
+					alt={activeImage.alt}
+					closeModal={() => setActiveImage(null)}
+				/>
+			)}
 		</Fragment>
 	);
 };

@@ -20,7 +20,8 @@ import {
 	PublicationFragment,
 } from '../../generated/graphql';
 import PublicationFooter from '../../components/publication-footer';
-import { useRef } from 'react';
+import ImageLightbox from '../../components/image-lightbox';
+import { useRef, useState } from 'react';
 import { twJoin } from 'tailwind-merge';
 import CustomImage from '../../components/custom-image';
 import { getBlurHash, imageReplacer, resizeImage } from '../../utils/image';
@@ -40,9 +41,23 @@ type Props = {
 
 export default function Post({ publication, draft }: Props) {
 	const headerRef = useRef<HTMLElement | null>(null);
+	const [activeImage, setActiveImage] = useState<{ src: string; alt: string } | null>(null);
 	if (!draft) {
 		return <ErrorPage statusCode={404} />;
 	}
+	const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
+		const target = e.target as HTMLElement;
+		if (target && target.tagName === 'IMG') {
+			const img = target as HTMLImageElement;
+			const imageSrc = img.currentSrc || img.src;
+			if (imageSrc) {
+				setActiveImage({
+					src: imageSrc,
+					alt: img.alt || '',
+				});
+			}
+		}
+	};
 	const title = `${draft.title} - Hashnode`;
 	const highlightJsMonokaiTheme =
 		'.hljs{display:block;overflow-x:auto;padding:.5em;background:#23241f}.hljs,.hljs-subst,.hljs-tag{color:#f8f8f2}.hljs-emphasis,.hljs-strong{color:#a8a8a2}.hljs-bullet,.hljs-link,.hljs-literal,.hljs-number,.hljs-quote,.hljs-regexp{color:#ae81ff}.hljs-code,.hljs-section,.hljs-selector-class,.hljs-title{color:#a6e22e}.hljs-strong{font-weight:700}.hljs-emphasis{font-style:italic}.hljs-attr,.hljs-keyword,.hljs-name,.hljs-selector-tag{color:#f92672}.hljs-attribute,.hljs-symbol{color:#66d9ef}.hljs-class .hljs-title,.hljs-params{color:#f8f8f2}.hljs-addition,.hljs-built_in,.hljs-builtin-name,.hljs-selector-attr,.hljs-selector-id,.hljs-selector-pseudo,.hljs-string,.hljs-template-variable,.hljs-type,.hljs-variable{color:#e6db74}.hljs-comment,.hljs-deletion,.hljs-meta{color:#75715e}';
@@ -181,6 +196,7 @@ export default function Post({ publication, draft }: Props) {
 											<div
 												id="post-content-wrapper"
 												className="prose prose-lg mx-auto mb-10 min-h-30 break-words dark:prose-dark xl:prose-xl"
+												onClick={handleContentClick}
 												// eslint-disable-next-line react/no-danger
 												dangerouslySetInnerHTML={{
 												__html: imageReplacer(postContent),
@@ -221,6 +237,13 @@ export default function Post({ publication, draft }: Props) {
 					logo={publication.preferences.logo}
 					darkMode={publication.preferences.darkMode}
 				/>
+				{activeImage && (
+					<ImageLightbox
+						src={activeImage.src}
+						alt={activeImage.alt}
+						closeModal={() => setActiveImage(null)}
+					/>
+				)}
 			</Layout>
 		</AppProvider>
 	);

@@ -241,6 +241,17 @@ img.image--right {
   margin-right: 0;
 }
 
+.prose img,
+.blog-page-content img {
+  cursor: zoom-in;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.prose img:hover,
+.blog-page-content img:hover {
+  opacity: 0.95;
+}
+
 /* Permalink styles start */
 
 .permalink-heading {
